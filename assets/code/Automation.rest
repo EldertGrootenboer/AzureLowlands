@@ -1,0 +1,49 @@
+########################################## Function ##########################################
+### Send messages
+POST http://localhost:7071/api/SendTweet
+
+{
+    "message": "Remember, the full line-up for #AzureLowlands is available now, so check https://azurelowlands.com for all details and get your FREE tickets today!",
+    "imageUrl": "https://pbs.twimg.com/media/EpbzphPW4AEC3aU?format=png&name=large"
+}
+
+########################################## LinkedIn ##########################################
+### Authentication (call from browser)
+GET {{linkedInAuthorizationCodeUrl}}
+
+### Get access token
+POST https://www.linkedin.com/oauth/v2/accessToken HTTP/1.1
+Host: www.linkedin.com
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=authorization_code&code={{linkedInAuthorizationCode}}&redirect_uri={{linkedInRedirectUri}}&client_id={{linkedInClientId}}&client_secret={{linkedInClientSecret}}
+
+### Get current member
+GET https://api.linkedin.com/v2/me
+X-Restli-Protocol-Version: 2.0.0
+Host: api.linkedin.com
+Connection: Keep-Alive
+Authorization: Bearer {{linkedInAccessToken}}
+
+### Share post
+POST https://api.linkedin.com/v2/ugcPosts
+X-Restli-Protocol-Version: 2.0.0
+Host: api.linkedin.com
+Connection: Keep-Alive
+Authorization: Bearer {{linkedInAccessToken}}
+
+{
+    "author": "urn:li:person:{{linkedInUserId}}",
+    "lifecycleState": "PUBLISHED",
+    "specificContent": {
+        "com.linkedin.ugc.ShareContent": {
+            "shareCommentary": {
+                "text": "Remember, the full line-up for #AzureLowlands is available now, so check https://azurelowlands.com for all details and get your FREE tickets today!"
+            },
+            "shareMediaCategory": "NONE"
+        }
+    },
+    "visibility": {
+        "com.linkedin.ugc.MemberNetworkVisibility": "PUBLIC"
+    }
+}
